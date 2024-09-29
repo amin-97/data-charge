@@ -34,7 +34,7 @@ mongoose.connect(process.env.DB_LOCATION, {
 const s3 = new aws.S3({
   region: "us-east-2",
   accessKeyId: process.env.AWS_ACCESS_KEY,
-  secretAccessKey: process.env.AWS_SECRET_KEY,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
 });
 
 const generateUploadURL = async () => {
@@ -42,7 +42,7 @@ const generateUploadURL = async () => {
   const imageName = `${nanoid()}-${date.getTime()}.jpeg`;
 
   return await s3.getSignedUrlPromise("putObject", {
-    Bucket: process.env.AWS_BUCKET_NAME,
+    Bucket: "datachargebucket",
     Key: imageName,
     Expires: 1000,
     ContentType: "image/jpeg",
