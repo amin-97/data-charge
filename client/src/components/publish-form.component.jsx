@@ -42,7 +42,7 @@ const PublishForm = () => {
       e.preventDefault();
 
       let tag = e.target.value;
-
+      dw;
       if (tags.length < tagLimit) {
         if (!tags.includes) tag;
       }
