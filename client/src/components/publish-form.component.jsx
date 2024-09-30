@@ -3,17 +3,28 @@ import AnimationWrapper from "../common/page-animation";
 import { useContext } from "react";
 import { EditorContext } from "../pages/editor.pages";
 import Tag from "./tags.component";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { UserContext } from "../App";
 
 const PublishForm = () => {
-  let characterLimit = 150;
+  let characterLimit = 200;
   let tagLimit = 10;
 
   let {
     blog,
-    blog: { banner, title, tags, des },
+    blog: { banner, title, tags, des, content },
     setEditorState,
     setBlog,
   } = useContext(EditorContext);
+
+  let {
+    userAuth: { access_token },
+  } = useContext(UserContext);
+
+  console.log(access_token);
+
+  let navigate = useNavigate();
 
   const handleCloseEvent = () => {
     setEditorState("editor");
@@ -21,13 +32,11 @@ const PublishForm = () => {
 
   const handleBlogTitleChange = (e) => {
     let input = e.target;
-
     setBlog({ ...blog, title: input.value });
   };
 
   const handleBlogDesChange = (e) => {
     let input = e.target;
-
     setBlog({ ...blog, des: input.value });
   };
 
@@ -41,18 +50,81 @@ const PublishForm = () => {
     if (e.keyCode === 13 || e.keyCode === 188) {
       e.preventDefault();
 
-      let tag = e.target.value;
-      dw;
+      let tag = e.target.value.trim();
+
       if (tags.length < tagLimit) {
-        if (!tags.includes) tag;
+        if (!tags.includes(tag) && tag.length) {
+          setBlog({ ...blog, tags: [...tags, tag] });
+        } else if (tags.includes(tag)) {
+          toast.error("Tag already exists");
+        }
+      } else {
+        toast.error(`You can add max ${tagLimit} tags`);
       }
+
+      e.target.value = "";
     }
+  };
+
+  const publishBlog = (e) => {
+    if (e.target.className.includes("disable")) {
+      return;
+    }
+
+    if (!title.length) {
+      return toast.error("Write blog title before publishing");
+    }
+
+    if (!des.length || des.length > characterLimit) {
+      return toast.error(
+        `Write a description about blog your blog within ${characterLimit} characters to publish`
+      );
+    }
+
+    if (!tags.length) {
+      return toast.error("Enter at least 1 tag to help us rank your blog");
+    }
+
+    let loadingToast = toast.loading("Publishing the masterpiece....");
+
+    e.target.classList.add("disable");
+
+    let blogObj = {
+      title,
+      banner,
+      des,
+      content,
+      tags,
+      draft: false,
+    };
+
+    axios
+      .post(import.meta.env.VITE_SERVER_DOMAIN + "/create-blog", blogObj, {
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+        },
+      })
+      .then(() => {
+        e.target.classList.remove("disable");
+
+        toast.dismiss(loadingToast);
+        toast.success("Blog published successfully");
+
+        setTimeout(() => {
+          navigate("/");
+        }, 500);
+      })
+      .catch(({ response }) => {
+        e.target.classList.remove("disable");
+        toast.dismiss(loadingToast);
+
+        return toast.error(response.data.error);
+      });
   };
 
   return (
     <AnimationWrapper>
       <section className="w-screen min-h-screen grid items-center lg:grid-cols-2 py-16 lg:gap-4">
-        era
         <Toaster />
         <button
           className="w-12 h-12 absolute right-[5vw] z-10 top-[5%] lg:top-[10%]"
@@ -112,8 +184,16 @@ const PublishForm = () => {
               onKeyDown={handleKeyDown}
             />
             {tags.map((tag, i) => {
-              <Tag tag={tag} key={i} />;
+              return <Tag tag={tag} tagIndex={i} key={i} />;
             })}
+
+            <p className="mt-1 mb-4 text-dark-grey text-right">
+              {tagLimit - tags.length} Tags left
+            </p>
+
+            <button className="btn-dark px-8" onClick={publishBlog}>
+              Publish
+            </button>
           </div>
         </div>
       </section>
