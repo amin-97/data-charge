@@ -9,6 +9,9 @@ import {
   activeTabLineRef,
   activeTabRef,
 } from "../components/inpage-navigation.component";
+import NoDataMessage from "../components/nodata.component";
+import { filterPaginationData } from "../common/filter-pagination-data";
+import LoadMoreDataBtn from "../components/load-more.component";
 
 const HomePage = () => {
   let [blogs, setBlog] = useState(null);
@@ -34,21 +37,52 @@ const HomePage = () => {
     "python",
     "javascript",
     "java",
-    "c++",
+    "cpp",
   ];
 
-  const fetchLatestBlogs = async () => {
+  const fetchLatestBlogs = ({ page = 1 }) => {
     axios
-      .get(import.meta.env.VITE_SERVER_DOMAIN + "/latest-blogs")
-      .then(({ data }) => {
-        setBlog(data.blogs);
+      .post(import.meta.env.VITE_SERVER_DOMAIN + "/latest-blogs", {
+        page,
+      })
+      .then(async ({ data }) => {
+        let formattedData = await filterPaginationData({
+          state: blogs,
+          data: data.blogs,
+          page,
+          countRoute: "/all-latest-blogs-count",
+        });
+        console.log(formattedData);
+        setBlog(formattedData);
       })
       .catch((err) => {
         console.log(err.message);
       });
   };
 
-  const fetchTrendingBlogs = async () => {
+  const fetchBlogsByCategory = ({ page = 1 }) => {
+    axios
+      .post(import.meta.env.VITE_SERVER_DOMAIN + "/search-blogs", {
+        tag: pageState,
+        page,
+      })
+      .then(async ({ data }) => {
+        let formattedData = await filterPaginationData({
+          state: blogs,
+          data: data.blogs,
+          page,
+          countRoute: "/search-blogs-count",
+          data_to_send: { tag: pageState },
+        });
+
+        setBlog(formattedData);
+      })
+      .catch((err) => {
+        console.log(err.message);
+      });
+  };
+
+  const fetchTrendingBlogs = () => {
     axios
       .get(import.meta.env.VITE_SERVER_DOMAIN + "/trending-blogs")
       .then(({ data }) => {
@@ -76,7 +110,9 @@ const HomePage = () => {
     activeTabRef.current.click();
 
     if (pageState == "home") {
-      fetchLatestBlogs();
+      fetchLatestBlogs({ page: 1 });
+    } else {
+      fetchBlogsByCategory({ page: 1 });
     }
 
     if (!trendingBlogs) {
@@ -96,8 +132,8 @@ const HomePage = () => {
             <>
               {blogs == null ? (
                 <Loader />
-              ) : (
-                blogs.map((blog, i) => {
+              ) : blogs.results.length ? (
+                blogs.results.map((blog, i) => {
                   return (
                     <AnimationWrapper
                       transition={{ duration: 1, delay: i * 0.1 }}
@@ -110,12 +146,20 @@ const HomePage = () => {
                     </AnimationWrapper>
                   );
                 })
+              ) : (
+                <NoDataMessage message="No blogs published" />
               )}
+              <LoadMoreDataBtn
+                state={blogs}
+                fetchDataFun={
+                  pageState == "home" ? fetchLatestBlogs : fetchBlogsByCategory
+                }
+              />
             </>
 
             {trendingBlogs == null ? (
               <Loader />
-            ) : (
+            ) : trendingBlogs.length ? (
               trendingBlogs.map((blog, i) => {
                 return (
                   <AnimationWrapper
@@ -126,6 +170,8 @@ const HomePage = () => {
                   </AnimationWrapper>
                 );
               })
+            ) : (
+              <NoDataMessage message="No trending blogs" />
             )}
           </InPageNavigation>
         </div>
@@ -163,7 +209,7 @@ const HomePage = () => {
 
               {trendingBlogs == null ? (
                 <Loader />
-              ) : (
+              ) : trendingBlogs.length ? (
                 trendingBlogs.map((blog, i) => {
                   return (
                     <AnimationWrapper
@@ -174,6 +220,8 @@ const HomePage = () => {
                     </AnimationWrapper>
                   );
                 })
+              ) : (
+                <NoDataMessage message="No trending blogs" />
               )}
             </div>
           </div>

@@ -1,3 +1,4 @@
 node_modules
 .env
 server/datacharge-cb251-firebase-adminsdk-y0cak-31de3309d9.json
+requests.rest

@@ -10,6 +10,7 @@ import EditorJS from "@editorjs/editorjs";
 import { tools } from "./tools.component";
 import axios from "axios";
 import { UserContext } from "../App";
+import { useParams } from "react-router-dom";
 
 const BlogEditor = () => {
   // let blogBannerRef = useRef();
@@ -26,6 +27,8 @@ const BlogEditor = () => {
     userAuth: { access_token },
   } = useContext(UserContext);
 
+  let { blog_id } = useParams();
+
   let navigate = useNavigate();
 
   useEffect(() => {
@@ -33,7 +36,7 @@ const BlogEditor = () => {
       setTextEditor(
         new EditorJS({
           holderId: "textEditor",
-          data: content,
+          data: Array.isArray(content) ? content[0] : content,
           tools: tools,
           placeholder: "Write your blog here...",
         })
@@ -135,11 +138,15 @@ const BlogEditor = () => {
         };
 
         axios
-          .post(import.meta.env.VITE_SERVER_DOMAIN + "/create-blog", blogObj, {
-            headers: {
-              Authorization: `Bearer ${access_token}`,
-            },
-          })
+          .post(
+            import.meta.env.VITE_SERVER_DOMAIN + "/create-blog",
+            { ...blogObj, id: blog_id },
+            {
+              headers: {
+                Authorization: `Bearer ${access_token}`,
+              },
+            }
+          )
           .then(() => {
             e.target.classList.remove("disable");
 
@@ -159,6 +166,8 @@ const BlogEditor = () => {
       });
     }
   };
+
+  console.log(title);
 
   return (
     <>
