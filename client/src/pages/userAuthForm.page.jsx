@@ -1,4 +1,4 @@
-import { useContext, useRef } from "react";
+import { useContext } from "react";
 import AnimationWrapper from "../common/page-animation";
 import InputBox from "../components/input.component";
 import googleIcon from "../imgs/google.png";
@@ -10,20 +10,17 @@ import { UserContext } from "../App";
 import { authWithGoogle } from "../common/firebase";
 
 const UserAuthForm = ({ type }) => {
-  const authForm = useRef();
-
   let {
     userAuth: { access_token },
     setUserAuth,
   } = useContext(UserContext);
-
-  console.log(access_token);
 
   const userAuthThroughServer = (serverRoute, formData) => {
     axios
       .post(import.meta.env.VITE_SERVER_DOMAIN + serverRoute, formData)
       .then(({ data }) => {
         storeInSession("user", JSON.stringify(data));
+
         setUserAuth(data);
       })
       .catch(({ response }) => {
@@ -39,6 +36,7 @@ const UserAuthForm = ({ type }) => {
     let emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/; // regex for email
     let passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/; // regex for password
 
+    // formData
     let form = new FormData(formElement);
     let formData = {};
 
@@ -46,25 +44,24 @@ const UserAuthForm = ({ type }) => {
       formData[key] = value;
     }
 
-    console.log(formData);
-
     let { fullname, email, password } = formData;
 
     // form validation
+
     if (fullname) {
       if (fullname.length < 3) {
-        return toast.error("Fullname must be at least 3 characters long");
+        return toast.error("Fullname must be at least 3 letters long");
       }
     }
     if (!email.length) {
-      return toast.error("Email is required");
+      return toast.error("Enter Email");
     }
     if (!emailRegex.test(email)) {
       return toast.error("Email is invalid");
     }
     if (!passwordRegex.test(password)) {
       return toast.error(
-        "Password must be at least 6 to 20 characters long and contain at least one number, one uppercase and one lowercase letter"
+        "Password should be 6 to 20 characters long with a numeric, 1 lowercase and 1 uppercase letters"
       );
     }
 
@@ -73,16 +70,19 @@ const UserAuthForm = ({ type }) => {
 
   const handleGoogleAuth = (e) => {
     e.preventDefault();
+
     authWithGoogle()
       .then((user) => {
         let serverRoute = "/google-auth";
+
         let formData = {
           access_token: user.accessToken,
         };
+
         userAuthThroughServer(serverRoute, formData);
       })
       .catch((err) => {
-        toast.error("Trouble logging in with Google");
+        toast.error("trouble login through google");
         return console.log(err);
       });
   };
@@ -94,7 +94,7 @@ const UserAuthForm = ({ type }) => {
       <section className="h-cover flex items-center justify-center">
         <Toaster />
         <form id="formElement" className="w-[80%] max-w-[400px]">
-          <h1 className="text-4xl font-gelasio capitalize text-center">
+          <h1 className="text-4xl font-gelasio capitalize text-center mb-24">
             {type == "sign-in" ? "Welcome back" : "Join us today"}
           </h1>
 
@@ -102,7 +102,7 @@ const UserAuthForm = ({ type }) => {
             <InputBox
               name="fullname"
               type="text"
-              placeholder="full name"
+              placeholder="Full Name"
               icon="fi-rr-user"
             />
           ) : (
@@ -133,7 +133,7 @@ const UserAuthForm = ({ type }) => {
 
           <div className="relative w-full flex items-center gap-2 my-10 opacity-10 uppercase text-black font-bold">
             <hr className="w-1/2 border-black" />
-            <p>OR</p>
+            <p>or</p>
             <hr className="w-1/2 border-black" />
           </div>
 
@@ -142,19 +142,19 @@ const UserAuthForm = ({ type }) => {
             onClick={handleGoogleAuth}
           >
             <img src={googleIcon} className="w-5" />
-            Continue with Google
+            continue with google
           </button>
 
           {type == "sign-in" ? (
             <p className="mt-6 text-dark-grey text-xl text-center">
-              Don't have an account?{" "}
+              Don't have an account ?
               <Link to="/signup" className="underline text-black text-xl ml-1">
-                Join us today.
+                Join us today
               </Link>
             </p>
           ) : (
             <p className="mt-6 text-dark-grey text-xl text-center">
-              Already have an account ?{" "}
+              Already a member ?
               <Link to="/signin" className="underline text-black text-xl ml-1">
                 Sign in here.
               </Link>
