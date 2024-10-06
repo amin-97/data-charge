@@ -14,7 +14,7 @@ const Tag = ({ tag, tagIndex }) => {
   };
 
   const handleTagEdit = (e) => {
-    if (e.keyCode === 13 || e.keyCode === 188) {
+    if (e.keyCode == 13 || e.keyCode == 188) {
       e.preventDefault();
 
       let currentTag = e.target.innerText;
@@ -28,7 +28,7 @@ const Tag = ({ tag, tagIndex }) => {
   };
 
   const handleTagDelete = () => {
-    tags = tags.filter((t) => t !== tag);
+    tags = tags.filter((t) => t != tag);
     setBlog({ ...blog, tags });
   };
 
@@ -45,7 +45,7 @@ const Tag = ({ tag, tagIndex }) => {
         className="mt-[2px] rounded-full absolute right-3 top-1/2 -translate-y-1/2"
         onClick={handleTagDelete}
       >
-        <i className="fi fi-br-cross text-xl pointer-events-none"></i>
+        <i className="fi fi-br-cross text-sm pointer-events-none"></i>
       </button>
     </div>
   );

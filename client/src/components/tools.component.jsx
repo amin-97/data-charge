@@ -28,12 +28,13 @@ const uploadImageByURL = (e) => {
     } catch (err) {
       reject(err);
     }
-    return link.then((url) => {
-      return {
-        sucess: 1,
-        file: { url },
-      };
-    });
+  });
+
+  return link.then((url) => {
+    return {
+      success: 1,
+      file: { url },
+    };
   });
 };
 
@@ -55,7 +56,7 @@ export const tools = {
   header: {
     class: Header,
     config: {
-      placeholder: "Type Heading...",
+      placeholder: "Type Heading....",
       levels: [2, 3],
       defaultLevel: 2,
     },

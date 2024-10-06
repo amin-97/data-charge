@@ -21,7 +21,6 @@ const BlogInteraction = () => {
     setBlog,
     islikedByUser,
     setLikedByUser,
-    commentsWrapper,
     setCommentsWrapper,
   } = useContext(BlogContext);
 
@@ -90,11 +89,11 @@ const BlogInteraction = () => {
       <div className="flex gap-6 justify-between">
         <div className="flex gap-3 items-center">
           <button
+            onClick={handleLike}
             className={
               "w-10 h-10 rounded-full flex items-center justify-center " +
-              (islikedByUser ? " bg-red/20 text-red" : " bg-grey/80")
+              (islikedByUser ? "bg-red/20 text-red" : "bg-grey/80")
             }
-            onClick={handleLike}
           >
             <i
               className={
@@ -102,7 +101,7 @@ const BlogInteraction = () => {
               }
             ></i>
           </button>
-          <p className="text-xl">{total_likes}</p>
+          <p className="text-xl text-dark-grey">{total_likes}</p>
 
           <button
             onClick={() => setCommentsWrapper((preVal) => !preVal)}
@@ -112,6 +111,7 @@ const BlogInteraction = () => {
           </button>
           <p className="text-xl text-dark-grey">{total_comments}</p>
         </div>
+
         <div className="flex gap-6 items-center">
           {username == author_username ? (
             <Link
@@ -123,6 +123,7 @@ const BlogInteraction = () => {
           ) : (
             ""
           )}
+
           <Link
             to={`https://twitter.com/intent/tweet?text=Read ${title}&url=${location.href}`}
           >

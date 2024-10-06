@@ -1,8 +1,8 @@
+import axios from "axios";
 import AnimationWrapper from "../common/page-animation";
 import InputBox from "../components/input.component";
 import { useContext, useRef } from "react";
 import { toast, Toaster } from "react-hot-toast";
-import axios from "axios";
 import { UserContext } from "../App";
 
 const ChangePassword = () => {
@@ -12,7 +12,7 @@ const ChangePassword = () => {
 
   let changePasswordForm = useRef();
 
-  let passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/; // regex for password
+  let passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/;
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -41,7 +41,7 @@ const ChangePassword = () => {
 
     e.target.setAttribute("disabled", true);
 
-    let loadingToast = toast.loading("Changing Password...");
+    let loadingToast = toast.loading("Updating....");
 
     axios
       .post(import.meta.env.VITE_SERVER_DOMAIN + "/change-password", formData, {
@@ -67,7 +67,7 @@ const ChangePassword = () => {
       <form ref={changePasswordForm}>
         <h1 className="max-md:hidden">Change Password</h1>
 
-        <div className="max-md:hidden md:max-w-[400px]">
+        <div className="py-10 w-full md:max-w-[400px]">
           <InputBox
             name="currentPassword"
             type="password"
@@ -84,9 +84,9 @@ const ChangePassword = () => {
           />
 
           <button
+            onClick={handleSubmit}
             className="btn-dark px-10"
             type="submit"
-            onClick={handleSubmit}
           >
             Change Password
           </button>

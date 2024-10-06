@@ -1,13 +1,12 @@
-import { useEffect, useState, createContext } from "react";
-import { Link, useParams } from "react-router-dom";
 import axios from "axios";
+import { createContext, useEffect, useState } from "react";
+import { Link, useParams } from "react-router-dom";
 import AnimationWrapper from "../common/page-animation";
 import Loader from "../components/loader.component";
 import { getDay } from "../common/date";
 import BlogInteraction from "../components/blog-interaction.component";
 import BlogPostCard from "../components/blog-post.component";
 import BlogContent from "../components/blog-content.component";
-
 import CommentsContainer, {
   fetchComments,
 } from "../components/comments.component";
@@ -15,8 +14,7 @@ import CommentsContainer, {
 export const blogStructure = {
   title: "",
   des: "",
-  content: [],
-  tags: [],
+  conent: [],
   author: { personal_info: {} },
   banner: "",
   publishedAt: "",
@@ -28,10 +26,10 @@ const BlogPage = () => {
   let { blog_id } = useParams();
 
   const [blog, setBlog] = useState(blogStructure);
-  const [similarBlogs, setSimilarBlogs] = useState(null);
+  const [similarBlogs, setSimilrBlogs] = useState(null);
   const [loading, setLoading] = useState(true);
   const [islikedByUser, setLikedByUser] = useState(false);
-  const [commentsWrapper, setCommentsWrapper] = useState(true);
+  const [commentsWrapper, setCommentsWrapper] = useState(false);
   const [totalParentCommentsLoaded, setTotalParentCommentsLoaded] = useState(0);
 
   let {
@@ -53,6 +51,7 @@ const BlogPage = () => {
           setParentCommentCountFun: setTotalParentCommentsLoaded,
         });
         setBlog(blog);
+
         axios
           .post(import.meta.env.VITE_SERVER_DOMAIN + "/search-blogs", {
             tag: blog.tags[0],
@@ -60,7 +59,7 @@ const BlogPage = () => {
             eliminate_blog: blog_id,
           })
           .then(({ data }) => {
-            setSimilarBlogs(data.blogs);
+            setSimilrBlogs(data.blogs);
           });
 
         setLoading(false);
@@ -73,12 +72,13 @@ const BlogPage = () => {
 
   useEffect(() => {
     resetStates();
+
     fetchBlog();
   }, [blog_id]);
 
   const resetStates = () => {
     setBlog(blogStructure);
-    setSimilarBlogs(null);
+    setSimilrBlogs(null);
     setLoading(true);
     setLikedByUser(false);
     setCommentsWrapper(false);
@@ -114,9 +114,9 @@ const BlogPage = () => {
                 <div className="flex gap-5 items-start">
                   <img src={profile_img} className="w-12 h-12 rounded-full" />
 
-                  <p>
+                  <p className="capitalize">
                     {fullname}
-                    <br />
+                    <br />@
                     <Link to={`/user/${author_username}`} className="underline">
                       {author_username}
                     </Link>
@@ -130,10 +130,6 @@ const BlogPage = () => {
 
             <BlogInteraction />
 
-            {/* Blog content will go here */}
-
-            {/* <BlogInteraction /> */}
-
             <div className="my-12 font-gelasio blog-page-content">
               {content[0].blocks.map((block, i) => {
                 return (
@@ -143,6 +139,8 @@ const BlogPage = () => {
                 );
               })}
             </div>
+
+            <BlogInteraction />
 
             {similarBlogs != null && similarBlogs.length ? (
               <>

@@ -1,11 +1,11 @@
 import { useParams } from "react-router-dom";
 import InPageNavigation from "../components/inpage-navigation.component";
+import { useEffect, useState } from "react";
+import Loader from "../components/loader.component";
 import AnimationWrapper from "../common/page-animation";
+import BlogPostCard from "../components/blog-post.component";
 import NoDataMessage from "../components/nodata.component";
 import LoadMoreDataBtn from "../components/load-more.component";
-import Loader from "../components/loader.component";
-import BlogPostCard from "../components/blog-post.component";
-import { useState, useEffect } from "react";
 import axios from "axios";
 import { filterPaginationData } from "../common/filter-pagination-data";
 import UserCard from "../components/usercard.component";
@@ -23,7 +23,7 @@ const SearchPage = () => {
         page,
       })
       .then(async ({ data }) => {
-        let formattedData = await filterPaginationData({
+        let formatedData = await filterPaginationData({
           state: blogs,
           data: data.blogs,
           page,
@@ -31,10 +31,11 @@ const SearchPage = () => {
           data_to_send: { query },
           create_new_arr,
         });
-        setBlog(formattedData);
+
+        setBlog(formatedData);
       })
       .catch((err) => {
-        console.log(err.message);
+        console.log(err);
       });
   };
 
@@ -94,7 +95,10 @@ const SearchPage = () => {
               blogs.results.map((blog, i) => {
                 return (
                   <AnimationWrapper
-                    transition={{ duration: 1, delay: i * 0.1 }}
+                    transition={{
+                      duration: 1,
+                      delay: i * 0.1,
+                    }}
                     key={i}
                   >
                     <BlogPostCard
@@ -107,12 +111,7 @@ const SearchPage = () => {
             ) : (
               <NoDataMessage message="No blogs published" />
             )}
-            {/* <LoadMoreDataBtn
-              state={blogs}
-              fetchDataFun={
-                pageState == "home" ? fetchLatestBlogs : fetchBlogsByCategory
-              }
-            /> */}
+            <LoadMoreDataBtn state={blogs} fetchDataFun={searchBlogs} />
           </>
 
           <UserCardWrapper />
@@ -121,8 +120,10 @@ const SearchPage = () => {
 
       <div className="min-w-[40%] lg:min-w-[350px] max-w-min border-l border-grey pl-8 pt-3 max-md:hidden">
         <h1 className="font-medium text-xl mb-8">
-          User related to search<i className="fi fi-rr-user"></i>
+          User related to search <i className="fi fi-rr-user mt-1"></i>
         </h1>
+
+        <UserCardWrapper />
       </div>
     </section>
   );

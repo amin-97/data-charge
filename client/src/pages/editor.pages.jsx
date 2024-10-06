@@ -11,7 +11,7 @@ import PageNotFound from "./404.page";
 const blogStructure = {
   title: "",
   banner: "",
-  content: [],
+  conent: [],
   tags: [],
   des: "",
   author: { personal_info: {} },
