@@ -75,10 +75,11 @@ const Navbar = () => {
     <>
       <nav className="navbar z-50">
         <Link to="/" className="flex-none w-10">
-          <img
+          DATA CHARGE
+          {/* <img
             src={theme == "light" ? darkLogo : lightLogo}
             className="w-full"
-          />
+          /> */}
         </Link>
 
         <div

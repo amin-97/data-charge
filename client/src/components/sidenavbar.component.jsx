@@ -72,14 +72,27 @@ const SideNav = () => {
             <h1 className="text-xl text-dark-grey mb-3">Dashboard</h1>
             <hr className="border-grey -ml-6 mb-8 mr-6" />
 
-            <NavLink
+            {isAdmin ? (
+              <NavLink
+                to="/editor"
+                onClick={(e) => setPageState(e.target.innerText)}
+                className="sidebar-link"
+              >
+                <i className="fi fi-rr-file-edit"></i>
+                Blogs
+              </NavLink>
+            ) : (
+              ""
+            )}
+
+            {/* <NavLink
               to="/dashboard/blogs"
               onClick={(e) => setPageState(e.target.innerText)}
               className="sidebar-link"
             >
               <i className="fi fi-rr-document"></i>
               Blogs
-            </NavLink>
+            </NavLink> */}
 
             <NavLink
               to="/dashboard/notifications"
