@@ -114,7 +114,12 @@ const Navbar = () => {
           ) : (
             ""
           )}
-
+          <Link to="/about" className="md:flex gap-2 link">
+            <p>About DC</p>
+          </Link>
+          <Link to="/contact" className="md:flex gap-2 link">
+            <p>Contact DC</p>
+          </Link>
           <button
             className="w-12 h-12 rounded-full bg-grey relative hover:bg-black/10"
             onClick={changeTheme}
